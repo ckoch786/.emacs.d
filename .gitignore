@@ -7,3 +7,7 @@
 /server/
 /.cache/
 /projects
+/.lsp-session-v1
+/url/
+/bookmarks
+/.dap-breakpoints
