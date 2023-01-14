@@ -1,6 +1,3 @@
-[submodule "ckoch786/sharper"]
-	path = ckoch786/sharper
-	url = https://github.com/ckoch786/sharper.git
 [submodule "site-lisp/ckoch786/sharper"]
 	path = site-lisp/ckoch786/sharper
 	url = https://github.com/ckoch786/sharper.git

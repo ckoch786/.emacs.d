@@ -13,6 +13,42 @@
 (require 'package)
 (add-to-list 'package-archives
 	     '("melpa" . "http://melpa.org/packages/") t)
+(add-to-list 'package-archives
+	     (cons "nongnu" (format "http%s://elpa.nongnu.org/nongnu/"
+				    (if (gnutls-available-p) "s" ""))))
+(package-initialize)
+(package-refresh-contents)
+
+;; Download Evil
+(unless (package-installed-p 'evil)
+  (package-install 'evil))
+
+;;; Evil
+(require 'evil)
+(evil-mode 1)
+
+;;; electric-parens
+(electric-pair-mode 1)
+
+;;; Calendar
+;; from google maps url 40.0169503,-83.1503162
+(setq calendar-latitude 40.0
+      calendar-longitude -83.1
+      calendar-location-name "Hilliard, OH")
+(setq calendar-time-zone -300
+      calendar-standard-time-zone-name "EST"
+      calendar-daylight-time-zone-name "EDT")
+
+;;; World Clock
+; TODO figure out the proper format for this and add Pakistan and Iowa
+; to the list
+; (setq zoneinfo-style-world-list
+;       '(("America/Los_Angeles" "Seattle")
+;  ("America/New_York" "New York")
+;  ("Europe/London" "London")
+;  ("Europe/Paris" "Paris")
+;  ("Asia/Calcutta" "Bangalore")
+;  ("Asia/Tokyo" "Tokyo")))
 
 ;;; Mode line settings
 (column-number-mode 1)
@@ -20,6 +56,11 @@
 
 ;;; General settings
 (tool-bar-mode -1)
+(auto-fill-mode 1)			; enable auto-fill globally,
+					; TODO use mode hooks if this
+					; gets in the way
+;; TODO figure out how to filter out auto-save and other auto files
+;; from find-file by default
 
 ;;; Aliases
 (defalias 'yes-or-no-p 'y-or-n-p)
@@ -51,12 +92,6 @@
 
 ;;; Packages ------------------
 ;;; csharp-mode
-;; Windows setup
-;; On my personal laptop this is set to ~/Users/ckoch
-;; On my work machine I believe it is set to ~/Users/ckoch/OneDrive - .../Documents/
-;; because I have been experimenting with keeping all my "documents" backedup with OneDrive
-;; TODO cleanup work and personal OneDrive and other cloud storage solutions.
-;; TODO check for python3, magit requires it as a dependency for some features.
 
 
 ;; Not needed because added to site-lisp leaving until I am sure that things load
@@ -70,20 +105,39 @@
 ;;   (company-mode)
 ;;   (flycheck-mode))
 
-(require 'lsp-mode)
-(add-hook 'prog-mode-hook #'lsp)
+;;;; ivy
+(use-package ivy
+  :custom
+  (setq ivy-use-virtual-buffers t)
+  (setq ivy-count-format "(%d/%d) ")
+  :config(ivy-mode))
+
+;; (require 'lsp-mode)
+;; (add-hook 'prog-mode-hook #'lsp)
 
 ;; TODO setup everything using use-package
 ;; TODO update this to only hook in csharp only for now trying to
 ;; focus on one thing at a time.
-;; (use-package lsp-mode
-;;   :hook (prog-mode . lsp))
-;;   :init)
+;;;; lsp-mode
+(use-package lsp-mode
+  :init
+  (setq lsp-keymap-prefix "C-c l")
+  :hook ((csharp-mode . lsp)
+	 (lsp-mode . lsp-enable-which-key-integration))
+  :commands lsp)
 
+(use-package lsp-ui :commands lsp-ui-mode)
+(use-package lsp-treemacs :commands lsp-treemacs-errors-list)
+(use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
+(use-package dap-mode)
+;;(use-package dap-csharp)
+(use-package which-key
+  :config
+  (which-key-mode))
 ;;; sharper-mode - forking to add some of the new commands for creating projects.
 ;; downloaded dotnet7
-(require 'sharper)				       ; Currently being auto loaded from site-lisp
-(global-set-key (kbd "C-c n") 'sharper-main-transient)  ; For "n" for "dot NET"
+;;(use-package sharper-mode)				       ; Currently being auto loaded from site-lisp
+;;(global-set-key (kbd "C-c n") 'sharper-main-transient)  ; For "n" for "dot NET"
 
 
 ;;; Info clips
